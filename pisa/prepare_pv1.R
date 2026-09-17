@@ -1,0 +1,16 @@
+# Select PV1 columns only; preserve student order.
+args <- commandArgs(trailingOnly = TRUE)
+file_arg <- sub("^--file=", "", grep("^--file=", commandArgs(), value = TRUE)[1L])
+root <- dirname(dirname(normalizePath(utils::URLdecode(file_arg))))
+data_dir <- if (length(args)) args[1L] else file.path(root, "data")
+input <- file.path(data_dir, "pisa_federated_data_pv.rds")
+output <- file.path(data_dir, "pisa_federated_data_pv1.rds")
+if (!file.exists(input)) stop("Missing prepared ten-PV data: ", input)
+if (file.exists(output)) stop("PV1 already exists; it will not be overwritten: ", output)
+d <- readRDS(input)
+columns <- c("1", "CNT", "ANXMAT", "MISCED", "FISCED", "PV1READ", "PV1SCIE", "PV1MATH")
+stopifnot(is.list(d), length(d) > 0L,
+          all(vapply(d, function(x) all(columns %in% names(x)), logical(1))))
+pv1 <- lapply(d, function(x) x[, columns, drop = FALSE])
+saveRDS(pv1, output)
+cat("Prepared PV1 without averaging, filtering, sorting or rescaling:\n", output, "\n")

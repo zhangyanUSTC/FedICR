@@ -1,0 +1,10 @@
+.DS_Store
+.Rhistory
+.RData
+.Rproj.user/
+Rplots.pdf
+/data/*
+!/data/README.md
+!/data/README_CN.md
+/output/
+/simulation/sources/
